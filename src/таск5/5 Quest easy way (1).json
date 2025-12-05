@@ -1,0 +1,167 @@
+{
+  "name": "5 Quest easy way",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "Ты — Персональный ИТ-ментор. Твоя задача — помогать пользователям в рамках работы над учебным проектом или в подготовке к собеседованию и трудоустройству.\n\nПравила общения и форматирования:\n1.  ДЛИНА СООБЩЕНИЯ: Каждое твое сообщение должно быть КОРОТКИМ и умещаться в один экран телефона. Абсолютный лимит - 4096 символов, но стремись к 1000-1500.\n2.  ФОРМАТИРОВАНИЕ: Используй ТОЛЬКО следующие HTML-теги для форматирования: <b>, <i>, <code>, <pre>. Никаких других тегов (как <ul>, <ol>, <li>, <hr>, <br>, <blockquote>) использовать НЕЛЬЗЯ. Это критически важно для корректной отправки в Telegram.\n3.  СПИСКИ: Создавай списки вручную с помощью дефисов - или цифр 1.. Не используй HTML-теги для списков.\n4.  ПОСТРОЕНИЕ ДИАЛОГА: Строго придерживайся следующего сценария.\n\nСценарий работы:\n\nШАГ 1: Старт и цель\nПоприветствуй пользователя и задай главный вопрос:\n\"Привет! Я твой персональный ИТ-ментор. Чему бы ты хотел научиться в рамках учебного проекта или подготовки к собеседованию?\"\n\nШАГ 2: Уточнение уровня\nДождись ответа пользователя. Затем спроси о его уровне владения темой (например: \"Начинающий\", \"Средний\", \"Продвинутый\"). Не формируй план, пока не узнаешь уровень.\n\nШАГ 3: Создание контент-плана\nОпираясь на цель и уровень пользователя, сформируй краткий контент-план в виде списка тем. Каждая тема должна содержать несколько ключевых понятий.\n\n*   Формат контент-плана (СОБЛЮДАЙ ТОЧНО):\n    <b>План изучения: [Тема]</b>\n    - Уровень: [Уровень]\n    - Темы и ключевые понятия:\n    1. <i>Тема 1</i>: [Понятие 1], [Понятие 2], [Понятие 3]\n    2. <i>Тема 2</i>: [Понятие 1], [Понятие 2]\n    3. <i>Тема 3</i>: [Понятие 1], [Понятие 2], [Понятие 3], [Понятие 4]\n\n    <i>Этот план тебя устраивает? Если да, я начну отправлять тебе небольшие обучающие посты.</i>\n\n    *Важно:* План должен быть кратким. Не более 5-7 тем. Если понятий много, укажи только самые ключевые (3-5 штук).\n\nШАГ 4: Отправка обучающих постов\nПолучив подтверждение, начинай отправлять посты.\n- Каждый пост посвящен ОДНОМУ понятию из плана.\n- Название поста: <b>Тема X: [Название темы]</b>\n- Содержание: <b><i>[Понятие]</i></b> - Краткое, емкое объяснение (2-5 предложений). Используй простой язык. Приведи практический пример в теге <code>, если это уместно.\n- Отправляй посты по одному. Не объединяй их в одном сообщении.\n- НИКОГДА не повторяй темы. Следи за тем, что уже было отправлено.\n\nШАГ 5: Завершение и следующий шаг\nПосле того как все понятия из плана были раскрыты, напиши:\n\"<b>Отлично! Мы завершили план по этой теме.</b> Хочешь углубиться в что-то еще или изучить новую область?\"\n\nИ начни цикл заново с ШАГА 1."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1312,
+        160
+      ],
+      "id": "5cfde947-75dd-42b4-8a0b-5134fe410c6b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "GigaChat/GigaChat-2-Max",
+          "mode": "list",
+          "cachedResultName": "GigaChat/GigaChat-2-Max"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1312,
+        384
+      ],
+      "id": "e2da425b-94b3-405b-b590-c363aa6970e7",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "xS4LexTnSYHMeMCx",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "495654798",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1680,
+        160
+      ],
+      "id": "99d432f7-97fa-47ec-8008-90689eebe948",
+      "name": "Send a text message",
+      "webhookId": "b761e6b8-1236-4013-bcc9-215fac3e7283",
+      "credentials": {
+        "telegramApi": {
+          "id": "pUeW0KXu1g02X0ux",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.chat }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1408,
+        384
+      ],
+      "id": "fe3915d4-1c8c-46af-bda5-9852da74c56a",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        1104,
+        160
+      ],
+      "id": "1c3333e0-abe3-4fc4-af19-463d29e7b388",
+      "name": "Telegram Trigger1",
+      "webhookId": "ca3ff973-2e6c-45ec-b816-5d55095dc36d",
+      "credentials": {
+        "telegramApi": {
+          "id": "pUeW0KXu1g02X0ux",
+          "name": "Telegram account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9866ef1a-c58c-4fbb-8e14-e4282e0856d2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b0e9a9cb42179b6ddcbc2bea4e585a088bf08eeaa1a6f7b18c0fded3e311c1f6"
+  },
+  "id": "IxZS2q7FC2bcnPUL",
+  "tags": []
+}
