@@ -1,0 +1,170 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -16,
+        -144
+      ],
+      "id": "b8106d39-c164-4b9d-98c9-bd6b118033d4",
+      "name": "Telegram Trigger",
+      "webhookId": "cac2e30c-ff5d-4915-af6e-9e1607f40b14",
+      "credentials": {
+        "telegramApi": {
+          "id": "YIg0FAHUjj4byC1u",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        608,
+        -144
+      ],
+      "id": "5165f23a-cff5-4b57-971e-17d1f0c94ea0",
+      "name": "Send a text message",
+      "webhookId": "c5408be9-912d-4d8e-8e91-5a168b6e5d25",
+      "credentials": {
+        "telegramApi": {
+          "id": "YIg0FAHUjj4byC1u",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "options": {
+          "systemMessage": "Цель: Помоги мне выбрать наиболее подходящую IT-профессию из списка: Data Science, DevOps, Cybersecurity, Биоинформатика, QA (тестирование), BSA (Бизнес-аналитик), Project Management.\n\nДля этого задай мне уточняющие вопросы по следующим блокам, чем меньше, тем лучше. Вопросы должны быть маленькими.\n\nОпыт и бэкграунд.\n\nТестирование: Был ли у меня опыт прохождения тестирования?\n\nКонтекст: Мой возраст, город проживания и готовность к переезду/командировкам.\n\nИнтересы: Чем я увлекаюсь в свободное время? \n\nЦели обучения: Чего я хочу достичь, осваивая профессию? \n\nСильные и слабые стороны: Что у меня получается лучше всего, а над чем мне стоит поработать?\n\nРабочие предпочтения: Как я хочу работать: удаленно, в офисе или в гибридном формате? В какой компании мне комфортнее: стартап, крупная корпорация или средний бизнес?\n\nЗадача: На основе моих ответов проанализируй, какая профессия из списка мне больше всего подходит, и обоснуй свой вывод.\n\n\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        208,
+        -144
+      ],
+      "id": "9dd77c20-f4a1-4942-b853-746a8b51d4e2",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "ai-sage/GigaChat3-10B-A1.8B",
+          "mode": "list",
+          "cachedResultName": "ai-sage/GigaChat3-10B-A1.8B"
+        },
+        "responsesApiEnabled": false,
+        "options": {
+          "maxTokens": 1024,
+          "temperature": 0.2
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        96,
+        64
+      ],
+      "id": "66fecc61-4c0b-44bf-9e46-da03e6600f17",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "1oPeBMRiIPk486Rr",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        64
+      ],
+      "id": "9d92222c-8499-4d16-bed4-cc025378ac09",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "989e65e3-08d6-463a-a0c9-b2d1465d594b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0a68739ad8a8a22b315073a550cc023967950a2dc99f236e6801e9d32fe991ed"
+  },
+  "id": "OiOoLuVx7w4ySg8z",
+  "tags": []
+}
